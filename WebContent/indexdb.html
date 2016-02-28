@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+
+    <title></title>
+
+</head>
+<body>
+<table id="TablePerson" border="1">
+ <thead>
+    <tr>
+        <th>ID</th>
+        <th>FirstName</th>
+        <th>LastName</th>
+        <th>Age</th>
+    </tr>
+    </thead>
+	</table>
+	<tbody id="tbody" border="1">
+	</tbody>
+	ID<input type = "text" id = "id" name = "id">
+	FirstName<input type = "text" id = "fn" name = "fn">
+	LastName<input type = "text" id = "ln" name = "ln">
+	Age<input type = "text" id = "age" name = "age"><br>
+	<input type = "button" id = "create" value = "Create" name = "create" onclick = "fcreate()">
+	<input type = "button" id = "read" value = "Read" name = "read" onclick = "fread()">
+	<input type = "button" id = "update" value = "Update" name = "update" onclick = "fupdate()">
+	<input type = "button" id = "delete" value = "Delete" name = "delete" onclick = "fdelete()">
+</body>
+<script>
+var crud;
+var str;
+
+function fcreate()
+{
+tableClear();
+crud = "create";
+dbRequest(crud);
+fieldsClear();
+fread();
+}
+function fread()
+{
+tableClear();
+crud = "read";
+dbRequest(crud);
+fieldsClear();
+}
+function fupdate()
+{
+tableClear();
+crud = "update";
+dbRequest(crud);
+fieldsClear();
+fread();
+}
+function fdelete()
+{
+tableClear();
+crud = "delete";
+dbRequest(crud);
+fieldsClear();
+fread();
+}
+function addRow(id, fn, ln, age)
+{
+	var table = document.getElementById('TablePerson');
+	
+	var row = document.createElement("TR");
+    table.appendChild(row);
+	
+	var tdId = document.createElement("TD");
+	var tdFn = document.createElement("TD");
+	var tdLn = document.createElement("TD");
+	var tdAge = document.createElement("TD");
+	
+	row.appendChild(tdId);
+	row.appendChild(tdFn);
+	row.appendChild(tdLn);
+	row.appendChild(tdAge);
+	
+	tdId.innerHTML = id;
+	tdFn.innerHTML = fn;
+	tdLn.innerHTML = ln;
+	tdAge.innerHTML = age;
+}
+function dbRequest(crud)
+{
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function()
+  {
+   if (xmlhttp.readyState==4 && xmlhttp.status==200)
+   {
+    str = xmlhttp.responseText;
+	console.log(str);
+	parseJson(str);
+   }
+  }
+ var params = "ID="+id.value+"&FName="+fn.value+"&LName="+ln.value+"&Age="+age.value+"&Crud="+crud;
+ xmlhttp.open("GET", "ServletDB?" + params, true);
+ xmlhttp.send();
+ return str;
+}
+function parseJson(str)
+{
+	  var json = JSON.parse(str)
+	  ,   array = []
+      ,   count = 0
+      ,   once_element = {};
+	  for(var obj in json) {
+
+	   once_element[obj] = json[obj];
+	   addRow(once_element[obj].id, once_element[obj].fn, once_element[obj].ln, once_element[obj].age);
+       array.push(once_element);
+       once_element = {};
+        
+    count++;
+	}
+}
+function tableClear()
+{
+var e = document.getElementById('TablePerson');
+while ( e.rows[1] ) {
+e.deleteRow(1);
+}
+}
+function fieldsClear()
+{
+id.value = '';
+fn.value = '';
+ln.value = '';
+age.value = '';
+}
+</script>
+</html>
